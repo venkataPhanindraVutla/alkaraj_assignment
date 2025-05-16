@@ -52,6 +52,9 @@ class TaskList extends StatelessWidget {
                   builder: (_) => TaskDetailDialog(task: task),
                 );
               },
+              onDelete: () {
+                context.read<ItemBloc>().add(DeleteItem(task.id!));
+              },
             ),
           );
         },

@@ -33,8 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!_isSearching) {
         _searchController.clear();
         _searchQuery = '';
-        // Optionally trigger a state update if needed to show all tasks
-        // context.read<ItemBloc>().add(LoadItems());
+        context.read<ItemBloc>().add(LoadItems());
       }
     });
   }
@@ -122,7 +121,15 @@ class _HomeScreenState extends State<HomeScreen> {
               });
 
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Tasks',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
                   FilterControls(
                     sortBy: _sortBy,
                     onSortChanged: (value) => setState(() => _sortBy = value!),
