@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "226033046960",
+    "project_id": "alkaraj-d0b19",
+    "storage_bucket": "alkaraj-d0b19.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226033046960:android:54cb9cb00a91fe3cc2f275",
+        "android_client_info": {
+          "package_name": "com.example.alkaraj_assignment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCS49MWerd1LDlldJaGRONXfmsRVYvRXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
