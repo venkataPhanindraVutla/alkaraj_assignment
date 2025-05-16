@@ -30,21 +30,6 @@ This project implements a full-stack CRUD (Create, Read, Update, Delete) module 
 
 ## Technical Implementation Details
 
-*   **Database Schema:**
-    The database schema for the `items` table would be as follows:
-
-    ```sql
-    CREATE TABLE items (
-      id TEXT PRIMARY KEY,
-      name TEXT,
-      description TEXT,
-      status TEXT,
-      createdAt TEXT,
-      priority TEXT
-    );
-    ```
-    Indexes can be added for frequently queried columns like `status` or `priority` for performance optimization.
-
 *   **Repository Pattern:** Implemented a repository pattern to abstract data sources.
 *   **API Services:** Used Firebase SDKs for data operations.
 *   **Error Handling & Retry:** Implemented error handling for data calls.
