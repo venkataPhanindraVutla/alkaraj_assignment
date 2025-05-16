@@ -35,13 +35,17 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
-          return MaterialApp(
-            title: 'Flutter Demo',
-            debugShowCheckedModeBanner: false,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: themeNotifier.themeMode,
-            home: SplashScreen(),
+          return AnimatedTheme(
+            data: themeNotifier.themeMode == ThemeMode.dark ? darkTheme : lightTheme,
+            duration: const Duration(milliseconds: 300), // Adjust duration as needed
+            child: MaterialApp(
+              title: 'Flutter Demo',
+              debugShowCheckedModeBanner: false,
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: themeNotifier.themeMode,
+              home: SplashScreen(),
+            ),
           );
         },
       ),

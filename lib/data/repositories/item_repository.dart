@@ -6,7 +6,6 @@ class ItemRepository {
   final CollectionReference itemsRef =
       FirebaseFirestore.instance.collection('items');
 
-  @override
   Future<Item> createItem(Item item) async {
     try {
       DocumentReference docRef = await itemsRef.add(item.toJson());
@@ -17,7 +16,6 @@ class ItemRepository {
     }
   }
 
-  @override
   Future<List<Item>> getItems() async {
     try {
       QuerySnapshot snapshot = await itemsRef.get();
@@ -29,7 +27,7 @@ class ItemRepository {
     }
   }
 
-  @override
+
   Future<Item> getItem(String id) async {
     try {
       DocumentSnapshot doc = await itemsRef.doc(id).get();
@@ -43,7 +41,7 @@ class ItemRepository {
     }
   }
 
-  @override
+  
   Future<Item> updateItem(String id, Item item) async {
     try {
       await itemsRef.doc(id).update(item.toJson());
@@ -54,7 +52,7 @@ class ItemRepository {
     }
   }
 
-  @override
+  
   Future<void> deleteItem(String id) async {
     try {
       await itemsRef.doc(id).delete();
