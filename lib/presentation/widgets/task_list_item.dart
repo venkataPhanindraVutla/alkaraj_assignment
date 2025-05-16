@@ -28,7 +28,6 @@ class _TaskListItemState extends State<TaskListItem> {
       case Priority.moderate:
         return colorScheme.tertiary;
       case Priority.low:
-      default:
         return colorScheme.secondary;
     }
   }

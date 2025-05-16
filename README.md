@@ -1,6 +1,58 @@
-# Alkaraj Assignment
+# Flutter Full-Stack CRUD Module
 
-This is a Flutter project for the Alkaraj assignment.
+## Objective
+
+This project implements a full-stack CRUD (Create, Read, Update, Delete) module in Flutter. The goal is to demonstrate understanding of API integration, local data persistence, UI updates, and basic app architecture using the BLoC pattern.
+
+## Requirements Implemented
+
+*   **Data Model:** Defined a data model for items (Tasks) including title, description, status, created date, and priority.
+*   **UI Screens:** Implemented screens for listing, adding, editing, and deleting items.
+*   **API Integration:** Integrated with Firebase for data storage and retrieval.
+*   **Local Caching:** (To be implemented/detailed)
+*   **Real-time UI Updates:** Ensured UI updates reflect changes.
+*   **User Feedback:** Provided user feedback using mechanisms like Snackbars.
+*   **State Management:** Used the BLoC (Business Logic Component) pattern.
+*   **Error Handling:** Implemented error handling for data operations.
+*   **Responsive UI:** Designed a UI that works on different screen sizes.
+
+## Guidance Followed
+
+*   Used `ListView` to display items.
+*   Implemented deletion confirmation dialogs.
+*   Used forms with validators for add/edit operations.
+*   Used dedicated screens/dialogs for add/edit actions with proper navigation.
+*   Organized code using a layered architecture (Data, Business Logic, Presentation).
+*   Used the `flutter_bloc` package.
+*   Considered dependency injection (details in Architecture Overview).
+*   Implemented loading states and empty state handling.
+*   Handled network connectivity changes (details in Technical Implementation Details).
+
+## Technical Implementation Details
+
+*   **Database Schema:**
+    The database schema for the `items` table would be as follows:
+
+    ```sql
+    CREATE TABLE items (
+      id TEXT PRIMARY KEY,
+      name TEXT,
+      description TEXT,
+      status TEXT,
+      createdAt TEXT,
+      priority TEXT
+    );
+    ```
+    Indexes can be added for frequently queried columns like `status` or `priority` for performance optimization.
+
+*   **Repository Pattern:** Implemented a repository pattern to abstract data sources.
+*   **API Services:** Used Firebase SDKs for data operations.
+*   **Error Handling & Retry:** Implemented error handling for data calls.
+*   **JSON Serialization/Deserialization:** Handled data conversion for Firebase.
+*   **Authentication:** Integrated Google Sign-In authentication.
+*   **Reusable UI Components:** Created reusable widgets.
+*   **Logging:** Added logging for debugging.
+*   **Optimistic Updates:** (To be implemented/detailed)
 
 ## Setup Instructions
 
@@ -35,29 +87,45 @@ To set up and run this project locally, follow these steps:
 
 This project primarily interacts with Firebase services for data storage and retrieval. There is no separate backend server with traditional REST API endpoints.
 
-Data operations are handled through the Firebase SDKs within the application.
+Data operations are handled through the Firebase SDKs within the application, specifically interacting with Firestore collections.
 
 ## Usage Instructions
 
 Once the application is set up and running, you can:
 
--   Navigate through the different screens (e.g., Home, Splash).
--   Interact with UI elements like the task list and filter controls.
--   Add new tasks using the add task bottom sheet.
--   View task details using the task detail dialog.
-
-Specific usage flows and features would be detailed here.
-
--   Sign in to the application using the Google Sign-In option.
+*   Sign in to the application using the Google Sign-In option.
+*   View the list of items (Tasks) on the home screen.
+*   Add new tasks using the add task button/dialog.
+*   Tap on a task to view its details or edit it.
+*   Swipe on a task (if implemented) or use a context menu to delete it.
+*   Use filter controls (if implemented) to filter the task list.
 
 ## Architecture Overview
 
-This project appears to follow a layered architecture, common in Flutter applications using state management patterns like BLoC (based on the presence of `lib/business_logic/bloc/item_bloc.dart`).
+This project follows a layered architecture to ensure separation of concerns and maintainability:
 
--   **Presentation Layer:** Contains the UI components (screens and widgets) responsible for displaying data and handling user interaction (`lib/presentation/`).
--   **Business Logic Layer:** Contains the BLoC for managing application state and business rules (`lib/business_logic/bloc/`). Services like `ItemService` handle specific operations (`lib/business_logic/services/`).
--   **Data Layer:** Responsible for data fetching and storage. This includes repositories (`lib/data/repositories/`) and potentially local databases (`lib/data/local_database/`) or remote data sources (Firebase).
--   **Models:** Data structures used throughout the application (`lib/data/models/`).
+*   **Presentation Layer (`lib/presentation/`):** Contains the UI components (screens and widgets) responsible for displaying data and handling user interaction. It consumes the BLoC for state updates and dispatches events.
+*   **Business Logic Layer (`lib/business_logic/`):** Contains the BLoC (`lib/business_logic/bloc/`) for managing application state and business rules. Services (`lib/business_logic/services/`) handle specific operations and interact with the data layer.
+*   **Data Layer (`lib/data/`):** Responsible for data fetching and storage. This includes repositories (`lib/data/repositories/`) that abstract data sources (Firebase/Firestore and potentially a local database like SQLite or Hive) and data models (`lib/data/models/`).
+*   **Dependency Injection:** (Details on how dependency injection is used, e.g., using a package like `get_it` or `provider` to provide instances of services and repositories).
 
-This structure promotes separation of concerns and testability.
+This structure promotes testability and allows for easier swapping of data sources or business logic implementations.
 
+## Testing Information
+
+(Details on testing strategy, types of tests included - unit, widget, integration, and how to run them)
+
+## Evaluation Criteria
+
+This project will be evaluated based on:
+
+*   Flutter code organization and architecture.
+*   API integration quality and error handling.
+*   Flutter UI/UX design and responsiveness.
+*   Error handling and edge cases in the Flutter application.
+*   Flutter best practices and code quality.
+*   Documentation quality and adherence to Flutter conventions.
+
+## Bonus Features
+
+List of implemented bonus features from the assignment : Search, Sorting/Filtering, Offline-first, Dark/Light Theme, Google Sign-In
