@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'home_screen.dart'; // We will create this next
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import '../../business_logic/services/auth_service.dart';
+import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,15 +15,21 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+    // Listen to auth state changes
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        // User is signed in, navigate to home screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -38,7 +46,12 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             SizedBox(height: 20),
-            CircularProgressIndicator(),
+            ElevatedButton(
+              onPressed: () async {
+                await authService.signInWithGoogle();
+              },
+              child: Text('Sign in with Google'),
+            ),
           ],
         ),
       ),

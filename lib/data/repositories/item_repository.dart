@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../business_logic/services/item_service.dart';
 import '../models/item.dart';
 
 class ItemRepository {
