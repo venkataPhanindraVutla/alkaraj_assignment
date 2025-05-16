@@ -1,13 +1,23 @@
 import 'package:alkaraj_assignment/business_logic/theme/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/models/item.dart' show Item, Status;
+import '../../data/models/item.dart' show Item, Status, Priority;
 import '../../business_logic/bloc/item_bloc.dart';
 import 'package:provider/provider.dart';
 import '../widgets/task_detail_dialog.dart';
 import '../widgets/add_task_bottom_sheet.dart';
+import '../widgets/task_list_item.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _sortBy = 'createdAt';
+  Status? _filterStatus; 
+  Priority? _filterPriority; 
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ItemBloc, ItemState>(
@@ -21,13 +31,10 @@ class HomeScreen extends StatelessWidget {
           );
         } else if (state is ItemOperationFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.error), backgroundColor: Colors.red),
           );
         } else if (state is ItemError) {
-           ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error loading tasks: ${state.message}'),
               backgroundColor: Colors.red,
@@ -40,91 +47,192 @@ class HomeScreen extends StatelessWidget {
           title: Text('TaskMaster'),
           actions: [
             IconButton(
-              icon: Icon(Icons.brightness_6), // Icon to toggle theme
+              icon: Icon(Icons.brightness_6),
               onPressed: () {
-                Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
+                Provider.of<ThemeNotifier>(
+                  context,
+                  listen: false,
+                ).toggleTheme();
               },
               tooltip: 'Toggle Theme',
             ),
           ],
-       ),
-       body: BlocBuilder<ItemBloc, ItemState>(
+        ),
+
+        body: BlocBuilder<ItemBloc, ItemState>(
           builder: (context, state) {
             if (state is ItemLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (state is ItemLoaded) {
-              final tasks = state.items;
-              if (tasks.isEmpty) {
-                 return Center(child: Text('No tasks yet. Add one using the + button!'));
+              List<Item> tasks = state.items;
+
+              // Apply filtering
+              if (_filterStatus != null) {
+                tasks =
+                    tasks
+                        .where((task) => task.status == _filterStatus)
+                        .toList();
               }
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<ItemBloc>().add(LoadItems());
-                },
-                child: ListView.builder(
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-                    return Card(
-                      margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                      child: ListTile(
-                        title: Text(task.name),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(task.description),
-                            Text('Status: ${task.status.toString().split('.').last}'),
-                            Text('Priority: ${task.priority.toString().split('.').last}'),
-                            Text('Created: ${task.createdAt.toLocal().toString().split('.')[0]}'),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                task.status == Status.completed
-                                    ? Icons.check_circle
-                                    : Icons.radio_button_unchecked,
-                                color: task.status == Status.completed ? Colors.green : Colors.red,
-                              ),
-                              onPressed: () {
-                                // Toggle task status
-                                final updatedTask = Item(
-                                  id: task.id, // Include the existing ID
-                                  name: task.name,
-                                  description: task.description,
-                                  status: task.status == Status.completed
-                                      ? Status.notCompleted
-                                      : Status.completed,
-                                  createdAt: task.createdAt,
-                                  priority: task.priority,
+              if (_filterPriority != null) {
+                tasks =
+                    tasks
+                        .where((task) => task.priority == _filterPriority)
+                        .toList();
+              }
+
+              // Apply sorting
+              tasks.sort((a, b) {
+                if (_sortBy == 'createdAt') {
+                  return b.createdAt.compareTo(a.createdAt);
+                } else if (_sortBy == 'priority') {
+                  return a.priority.index.compareTo(b.priority.index);
+                }
+                return 0;
+              });
+
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        DropdownButton<String>(
+                          value: _sortBy,
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _sortBy = newValue;
+                              });
+                            }
+                          },
+                          items:
+                              <String>['createdAt', 'priority'].map((
+                                String value,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    'Sort: ${value == 'createdAt' ? 'Date' : 'Priority'}',
+                                  ),
                                 );
-                                // Use the actual item ID
-                                context.read<ItemBloc>().add(UpdateItem(task.id!, updatedTask));
-                              },
+                              }).toList(),
+                        ),
+                        DropdownButton<Status?>(
+                          value: _filterStatus,
+                          onChanged: (Status? newValue) {
+                            setState(() {
+                              _filterStatus = newValue;
+                            });
+                          },
+                          items: [
+                            DropdownMenuItem<Status?>(
+                              value: null,
+                              child: Text('All Statuses'),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: Colors.grey),
-                              onPressed: () {
-                                // Use the actual item ID
-                                context.read<ItemBloc>().add(DeleteItem(task.id!));
-                              },
+                            ...Status.values.map(
+                              (status) => DropdownMenuItem<Status>(
+                                value: status,
+                                child: Text(status.toString().split('.').last),
+                              ),
                             ),
                           ],
                         ),
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return TaskDetailDialog(task: task);
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+                        DropdownButton<Priority?>(
+                          value: _filterPriority,
+                          onChanged: (Priority? newValue) {
+                            setState(() {
+                              _filterPriority = newValue;
+                            });
+                          },
+                          items: [
+                            DropdownMenuItem<Priority?>(
+                              value: null,
+                              child: Text('All Priorities'),
+                            ),
+                            ...Priority.values.map(
+                              (priority) => DropdownMenuItem<Priority>(
+                                value: priority,
+                                child: Text(
+                                  priority.toString().split('.').last,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child:
+                        tasks.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No tasks yet. Add one using the + button!',
+                              ),
+                            )
+                            : RefreshIndicator(
+                              onRefresh: () async {
+                                context.read<ItemBloc>().add(LoadItems());
+                              },
+                              child: ListView.builder(
+                                itemCount: tasks.length,
+                                itemBuilder: (context, index) {
+                                  final task = tasks[index];
+                                  return Dismissible(
+                                    key: Key(task.id!),
+                                    direction: DismissDirection.endToStart,
+                                    onDismissed: (direction) {
+                                      context.read<ItemBloc>().add(
+                                        DeleteItem(task.id!),
+                                      );
+                                    },
+                                    background: Container(
+                                      color: Colors.red,
+                                      alignment: Alignment.centerRight,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 20.0,
+                                      ),
+                                      child: Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    child: TaskListItem(
+                                      task: task,
+                                      onToggleStatus: () {
+                                        final updatedTask = Item(
+                                          id: task.id,
+                                          name: task.name,
+                                          description: task.description,
+                                          status:
+                                              task.status == Status.completed
+                                                  ? Status.notCompleted
+                                                  : Status.completed,
+                                          createdAt: task.createdAt,
+                                          priority: task.priority,
+                                        );
+                                        context.read<ItemBloc>().add(
+                                          UpdateItem(task.id!, updatedTask),
+                                        );
+                                      },
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return TaskDetailDialog(task: task);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                  ),
+                ],
               );
             } else if (state is ItemError) {
               return Center(child: Text('Error: ${state.message}'));
@@ -132,20 +240,22 @@ class HomeScreen extends StatelessWidget {
             return Center(child: Text('Press the + button to add a task!'));
           },
         ),
-       floatingActionButton: FloatingActionButton(
-         onPressed: () {
-           showModalBottomSheet(
-             context: context,
-             isScrollControlled: true, // Allows the bottom sheet to take full height
-             builder: (BuildContext context) {
-               return AddTaskBottomSheet();
-             },
-           );
-         },
-         child: Icon(Icons.add),
-         tooltip: 'Add Task',
-       ),
-     ),
-   );
- }
+
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled:
+                  true,
+              builder: (BuildContext context) {
+                return AddTaskBottomSheet();
+              },
+            );
+          },
+          child: Icon(Icons.add),
+          tooltip: 'Add Task',
+        ),
+      ),
+    );
+  }
 }
