@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:alkaraj_assignment/presentation/screens/splash_screen.dart';
+import 'package:alkaraj_assignment/business_logic/theme/theme_notifier.dart';
 import 'package:alkaraj_assignment/business_logic/bloc/item_bloc.dart';
 import 'package:alkaraj_assignment/data/repositories/item_repository.dart';
 import 'package:alkaraj_assignment/business_logic/services/item_service_impl.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         Provider<ItemRepository>(create: (_) => ItemRepository()),
         Provider<ItemServiceImpl>(
           create: (context) => ItemServiceImpl(context.read<ItemRepository>()),
@@ -31,13 +33,17 @@ class MyApp extends StatelessWidget {
           create: (context) => ItemBloc(context.read<ItemServiceImpl>())..add(LoadItems()),
         ),
       ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home: SplashScreen(),
+      child: Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, child) {
+          return MaterialApp(
+            title: 'Flutter Demo',
+            debugShowCheckedModeBanner: false,
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: themeNotifier.themeMode,
+            home: SplashScreen(),
+          );
+        },
       ),
     );
   }

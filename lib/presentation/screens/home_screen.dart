@@ -1,7 +1,9 @@
+import 'package:alkaraj_assignment/business_logic/theme/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/item.dart' show Item, Status;
 import '../../business_logic/bloc/item_bloc.dart';
+import 'package:provider/provider.dart';
 import '../widgets/task_detail_dialog.dart';
 import '../widgets/add_task_bottom_sheet.dart';
 
@@ -13,9 +15,9 @@ class HomeScreen extends StatelessWidget {
         title: Text('TaskMaster'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: Icon(Icons.brightness_6), // Icon to toggle theme
             onPressed: () {
-              context.read<ItemBloc>().add(LoadItems());
+              Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
             },
             tooltip: 'Refresh Tasks',
           ),

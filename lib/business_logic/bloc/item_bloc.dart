@@ -40,6 +40,16 @@ class ItemError extends ItemState {
   ItemError(this.message);
 }
 
+class ItemOperationSuccess extends ItemState {
+  final String message;
+  ItemOperationSuccess(this.message);
+}
+
+class ItemOperationFailure extends ItemState {
+  final String error;
+  ItemOperationFailure(this.error);
+}
+
 class ItemBloc extends Bloc<ItemEvent, ItemState> {
   final ItemServiceImpl _itemService;
 
@@ -63,30 +73,33 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
   Future<void> _onAddItem(AddItem event, Emitter<ItemState> emit) async {
     try {
       await _itemService.createItem(event.item);
+      emit(ItemOperationSuccess('Task added successfully!'));
       // After adding, reload items to update the UI
       add(LoadItems());
     } catch (e) {
-      emit(ItemError(e.toString()));
+      emit(ItemOperationFailure('Failed to add task: ${e.toString()}'));
     }
   }
 
   Future<void> _onUpdateItem(UpdateItem event, Emitter<ItemState> emit) async {
     try {
       await _itemService.updateItem(event.id, event.item);
+      emit(ItemOperationSuccess('Task updated successfully!'));
       // After updating, reload items to update the UI
       add(LoadItems());
     } catch (e) {
-      emit(ItemError(e.toString()));
+      emit(ItemOperationFailure('Failed to update task: ${e.toString()}'));
     }
   }
 
   Future<void> _onDeleteItem(DeleteItem event, Emitter<ItemState> emit) async {
     try {
       await _itemService.deleteItem(event.id);
+      emit(ItemOperationSuccess('Task deleted successfully!'));
       // After deleting, reload items to update the UI
       add(LoadItems());
     } catch (e) {
-      emit(ItemError(e.toString()));
+      emit(ItemOperationFailure('Failed to delete task: ${e.toString()}'));
     }
   }
 }
