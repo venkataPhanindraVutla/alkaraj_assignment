@@ -21,7 +21,6 @@ class FilterControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
@@ -32,10 +31,7 @@ class FilterControls extends StatelessWidget {
             value: sortBy,
             onChanged: onSortChanged,
             hint: 'Sort',
-            items: {
-              'createdAt': 'Date',
-              'priority': 'Priority',
-            },
+            items: {'createdAt': 'Date', 'priority': 'Priority'},
           ),
           _buildDropdown<Status?>(
             context: context,
@@ -93,7 +89,10 @@ class FilterControls extends StatelessWidget {
         child: DropdownButton<T>(
           value: value,
           isExpanded: true,
-          icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: colorScheme.onSurfaceVariant,
+          ),
           style: textTheme.bodyMedium?.copyWith(fontSize: 14),
           dropdownColor: colorScheme.surfaceVariant,
           onChanged: onChanged,

@@ -1,3 +1,4 @@
+import 'package:alkaraj_assignment/business_logic/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -48,11 +49,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ItemBloc, ItemState>(
       listener: (context, state) {
-        if (state is ItemOperationSuccess || state is ItemOperationFailure || state is ItemError) {
+        if (state is ItemOperationSuccess ||
+            state is ItemOperationFailure ||
+            state is ItemError) {
           final message = state is ItemOperationSuccess
               ? state.message
-              : (state is ItemOperationFailure ? state.error : (state as ItemError).message);
-          final color = state is ItemOperationSuccess ? Colors.green : Colors.red;
+              : (state is ItemOperationFailure
+                    ? state.error
+                    : (state as ItemError).message);
+          final color = state is ItemOperationSuccess
+              ? Colors.green
+              : Colors.red;
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(message), backgroundColor: color),
@@ -77,6 +84,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 : const Text('TaskMaster', key: ValueKey<bool>(false)),
           ),
+          leading: IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await context.read<AuthService>().signOutGoogle();
+            },
+            tooltip: 'Logout',
+          ),
           actions: [
             IconButton(
               icon: Icon(_isSearching ? Icons.close : Icons.search),
@@ -86,7 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.brightness_6),
               onPressed: () {
-                Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
+                Provider.of<ThemeNotifier>(
+                  context,
+                  listen: false,
+                ).toggleTheme();
               },
               tooltip: 'Toggle Theme',
             ),
@@ -94,29 +111,44 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: BlocBuilder<ItemBloc, ItemState>(
           builder: (context, state) {
-            if (state is ItemLoading) return const Center(child: CircularProgressIndicator());
+            if (state is ItemLoading)
+              return const Center(child: CircularProgressIndicator());
             if (state is ItemLoaded) {
               List<Item> tasks = state.items;
 
               // Filtering
               if (_filterStatus != null) {
-                tasks = tasks.where((task) => task.status == _filterStatus).toList();
+                tasks = tasks
+                    .where((task) => task.status == _filterStatus)
+                    .toList();
               }
               if (_filterPriority != null) {
-                tasks = tasks.where((task) => task.priority == _filterPriority).toList();
+                tasks = tasks
+                    .where((task) => task.priority == _filterPriority)
+                    .toList();
               }
 
               // Searching
               if (_searchQuery.isNotEmpty) {
-                tasks = tasks.where((task) =>
-                    task.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                    task.description.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+                tasks = tasks
+                    .where(
+                      (task) =>
+                          task.name.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ) ||
+                          task.description.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ),
+                    )
+                    .toList();
               }
 
               // Sorting
               tasks.sort((a, b) {
-                if (_sortBy == 'createdAt') return b.createdAt.compareTo(a.createdAt);
-                if (_sortBy == 'priority') return a.priority.index.compareTo(b.priority.index);
+                if (_sortBy == 'createdAt')
+                  return b.createdAt.compareTo(a.createdAt);
+                if (_sortBy == 'priority')
+                  return a.priority.index.compareTo(b.priority.index);
                 return 0;
               });
 
@@ -134,17 +166,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     sortBy: _sortBy,
                     onSortChanged: (value) => setState(() => _sortBy = value!),
                     filterStatus: _filterStatus,
-                    onStatusChanged: (value) => setState(() => _filterStatus = value),
+                    onStatusChanged: (value) =>
+                        setState(() => _filterStatus = value),
                     filterPriority: _filterPriority,
-                    onPriorityChanged: (value) => setState(() => _filterPriority = value),
+                    onPriorityChanged: (value) =>
+                        setState(() => _filterPriority = value),
                   ),
                   Expanded(child: TaskList(tasks: tasks)),
                 ],
               );
             }
 
-            if (state is ItemError) return Center(child: Text('Error: ${state.message}'));
-            return const Center(child: Text('Press the + button to add a task!'));
+            if (state is ItemError)
+              return Center(child: Text('Error: ${state.message}'));
+            return const Center(
+              child: Text('Press the + button to add a task!'),
+            );
           },
         ),
         floatingActionButton: FloatingActionButton(

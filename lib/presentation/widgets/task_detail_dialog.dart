@@ -118,26 +118,22 @@ class _TaskDetailDialogState extends State<TaskDetailDialog> {
                 ],
               ),
               SizedBox(height: 16.0),
-              Text('Created: ${widget.task.createdAt.toLocal().toString().split('.')[0]}'),
+              Text(
+                'Created: ${widget.task.createdAt.toLocal().toString().split('.')[0]}',
+              ),
             ],
           ),
         ),
       ),
       actions: <Widget>[
-        TextButton(
-          child: Text('Delete'),
-          onPressed: _deleteTask,
-        ),
+        TextButton(child: Text('Delete'), onPressed: _deleteTask),
         TextButton(
           child: Text('Cancel'),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        ElevatedButton(
-          child: Text('Save'),
-          onPressed: _saveChanges,
-        ),
+        ElevatedButton(child: Text('Save'), onPressed: _saveChanges),
       ],
     );
   }

@@ -7,7 +7,8 @@ class AuthService {
 
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn
+          .signIn();
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
@@ -15,11 +16,15 @@ class AuthService {
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
         );
-        final UserCredential userCredential = await _auth.signInWithCredential(credential);
+        final UserCredential userCredential = await _auth.signInWithCredential(
+          credential,
+        );
         return userCredential.user;
       }
     } catch (e) {
-      print(e.toString());
+      // Log the error instead of printing
+      // Consider using a proper logging framework like `logger`
+      print('Error signing in with Google: ${e.toString()}');
       return null;
     }
     return null;

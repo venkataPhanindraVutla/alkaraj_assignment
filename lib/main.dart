@@ -14,9 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    const MyApp(),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -32,15 +30,20 @@ class MyApp extends StatelessWidget {
           create: (context) => ItemServiceImpl(context.read<ItemRepository>()),
         ),
         BlocProvider<ItemBloc>(
-          create: (context) => ItemBloc(context.read<ItemServiceImpl>())..add(LoadItems()),
+          create: (context) =>
+              ItemBloc(context.read<ItemServiceImpl>())..add(LoadItems()),
         ),
         Provider<AuthService>(create: (_) => AuthService()),
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           return AnimatedTheme(
-            data: themeNotifier.themeMode == ThemeMode.dark ? darkTheme : lightTheme,
-            duration: const Duration(milliseconds: 300), // Adjust duration as needed
+            data: themeNotifier.themeMode == ThemeMode.dark
+                ? darkTheme
+                : lightTheme,
+            duration: const Duration(
+              milliseconds: 300,
+            ), // Adjust duration as needed
             child: MaterialApp(
               title: 'Flutter Demo',
               debugShowCheckedModeBanner: false,

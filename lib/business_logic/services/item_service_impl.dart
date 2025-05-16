@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:alkaraj_assignment/data/models/item.dart';
 import 'package:alkaraj_assignment/data/repositories/item_repository.dart';
 import 'item_service.dart';
@@ -26,7 +27,9 @@ class ItemServiceImpl implements ItemService {
   Future<Item> getItem(String id) async {
     // Try to get from cache first
     final cachedItems = await _databaseHelper.getTasks();
-    final cachedItem = cachedItems.firstWhere((item) => item.id == id, orElse: () => null as Item);
+    final cachedItem = cachedItems.firstWhereOrNull(
+      (item) => item.id == id,
+    );
     if (cachedItem != null) {
       return cachedItem;
     }

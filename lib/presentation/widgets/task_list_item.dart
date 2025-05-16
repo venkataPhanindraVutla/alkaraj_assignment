@@ -24,12 +24,12 @@ class _TaskListItemState extends State<TaskListItem> {
     final colorScheme = Theme.of(context).colorScheme;
     switch (priority) {
       case Priority.high:
-        return colorScheme.error; 
+        return colorScheme.error;
       case Priority.moderate:
         return colorScheme.tertiary;
       case Priority.low:
       default:
-        return colorScheme.secondary; 
+        return colorScheme.secondary;
     }
   }
 
@@ -37,13 +37,16 @@ class _TaskListItemState extends State<TaskListItem> {
       s.isNotEmpty ? s[0].toUpperCase() + s.substring(1).toLowerCase() : s;
 
   Future<bool?> _confirmDismiss(DismissDirection direction) async {
-    if (direction == DismissDirection.endToStart) { // Swiping from right to left (deletion)
+    if (direction == DismissDirection.endToStart) {
+      // Swiping from right to left (deletion)
       return await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Confirm Deletion'),
-            content: Text('Are you sure you want to delete "${widget.task.name}"?'),
+            content: Text(
+              'Are you sure you want to delete "${widget.task.name}"?',
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -58,11 +61,14 @@ class _TaskListItemState extends State<TaskListItem> {
         },
       );
     }
-    return Future.value(true); // Allow other dismiss directions (like left swipe for status toggle)
+    return Future.value(
+      true,
+    ); // Allow other dismiss directions (like left swipe for status toggle)
   }
 
   void _onDismissed(DismissDirection direction) {
-    if (direction == DismissDirection.endToStart) { // Swiping from right to left (delete)
+    if (direction == DismissDirection.endToStart) {
+      // Swiping from right to left (delete)
       widget.onDelete();
     }
   }
@@ -76,7 +82,8 @@ class _TaskListItemState extends State<TaskListItem> {
 
     return Dismissible(
       key: Key(widget.task.id!), // Unique key for Dismissible
-      direction: DismissDirection.endToStart, // Only allow right-to-left swipe for deletion
+      direction: DismissDirection
+          .endToStart, // Only allow right-to-left swipe for deletion
       confirmDismiss: _confirmDismiss,
       onDismissed: _onDismissed,
       background: Container(
@@ -92,23 +99,26 @@ class _TaskListItemState extends State<TaskListItem> {
           margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: priorityColor.withOpacity(0.5),
-              width: 1,
-            ),
+            side: BorderSide(color: priorityColor.withOpacity(0.5), width: 1),
           ),
           color: Theme.of(context).cardColor,
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), // Reduced horizontal padding
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 6,
+            ), // Reduced horizontal padding
             leading: IconButton(
               icon: Icon(
                 isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: isCompleted ? Colors.green : colorScheme.onSurface.withOpacity(0.6),
+                color: isCompleted
+                    ? Colors.green
+                    : colorScheme.onSurface.withOpacity(0.6),
                 size: 26,
               ),
               onPressed: widget.onToggleStatus,
               padding: EdgeInsets.zero, // Remove padding from IconButton
-              constraints: BoxConstraints(), // Remove constraints from IconButton
+              constraints:
+                  BoxConstraints(), // Remove constraints from IconButton
             ),
             title: Text(
               widget.task.name,
@@ -137,12 +147,23 @@ class _TaskListItemState extends State<TaskListItem> {
                     spacing: 6,
                     runSpacing: -4,
                     children: [
-                      _infoChip(_capitalize(widget.task.status.name), colorScheme.primary),
-                      _infoChip( _capitalize(widget.task.priority.name), priorityColor),
+                      _infoChip(
+                        _capitalize(widget.task.status.name),
+                        colorScheme.primary,
+                      ),
+                      _infoChip(
+                        _capitalize(widget.task.priority.name),
+                        priorityColor,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 6), // Add spacing between chips and created date
-                   _infoChip(widget.task.createdAt.toLocal().toString().split('.')[0], colorScheme.surfaceTint), // Moved created date chip
+                  const SizedBox(
+                    height: 6,
+                  ), // Add spacing between chips and created date
+                  _infoChip(
+                    widget.task.createdAt.toLocal().toString().split('.')[0],
+                    colorScheme.surfaceTint,
+                  ), // Moved created date chip
                 ],
               ),
             ),
@@ -153,7 +174,7 @@ class _TaskListItemState extends State<TaskListItem> {
     );
   }
 
-  Widget _infoChip( String value, Color color) {
+  Widget _infoChip(String value, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(

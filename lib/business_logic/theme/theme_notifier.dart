@@ -6,7 +6,9 @@ class ThemeNotifier with ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
 
   void toggleTheme() {
-    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    _themeMode = _themeMode == ThemeMode.light
+        ? ThemeMode.dark
+        : ThemeMode.light;
     notifyListeners();
   }
 }
@@ -47,7 +49,10 @@ ThemeData lightTheme = ThemeData(
   textTheme: TextTheme(
     bodyLarge: TextStyle(color: Colors.black87),
     bodyMedium: TextStyle(color: Colors.black54),
-    titleLarge: TextStyle(color: Color(0xFFE65100), fontWeight: FontWeight.bold),
+    titleLarge: TextStyle(
+      color: Color(0xFFE65100),
+      fontWeight: FontWeight.bold,
+    ),
   ),
 );
 
