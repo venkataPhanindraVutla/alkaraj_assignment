@@ -20,12 +20,43 @@ class Item {
     required this.priority,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'status': status.name,
+      'priority': priority.name,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory Item.fromMap(Map<String, dynamic> map) {
+    final statusRaw = map['status'] ?? 'notCompleted';
+    final priorityRaw = map['priority'] ?? 'low';
+
+    return Item(
+      id: map['id'],
+      name: map['name'] ?? '',
+      description: map['description'] ?? '',
+      status: Status.values.firstWhere(
+        (e) => e.name == statusRaw,
+        orElse: () => Status.notCompleted,
+      ),
+      createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
+      priority: Priority.values.firstWhere(
+        (e) => e.name == priorityRaw,
+        orElse: () => Priority.low,
+      ),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'description': description,
-      'status': status.name, 
-      'priority': priority.name, 
+      'status': status.name,
+      'priority': priority.name,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -35,7 +66,7 @@ class Item {
     final priorityRaw = json['priority'] ?? 'low';
 
     return Item(
-      id: id ?? json['id'], 
+      id: id ?? json['id'],
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       status: Status.values.firstWhere(

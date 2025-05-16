@@ -6,4 +6,11 @@ abstract class ItemService {
   Future<Item> getItem(String id);
   Future<Item> updateItem(String id, Item item);
   Future<void> deleteItem(String id);
+
+  // Caching methods
+  Future<void> cacheItems(List<Item> items);
+  Future<List<Item>> getCachedItems();
+  Future<void> cacheItem(Item item);
+  Future<void> deleteCachedItem(String id);
+  Future<void> deleteAllCachedItems();
 }
